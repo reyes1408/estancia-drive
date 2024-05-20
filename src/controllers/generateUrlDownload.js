@@ -1,28 +1,26 @@
-
 import drive from '../credentials/authDrive.js';
 
-//Generar URL publica para ver y descargar los archivos
-const generateUrlDownload = async ( req, res ) => {
-  try {
-    const fileId = "1s6-jeuN57lf7yMk8QBJWA3KAEKJNqRs_";
-    await drive.permissions.create({
-      fileId: fileId,
-      requestBody: {
-        role: "reader",
-        type: "anyone",
-      },
-    });
+// Generar URL pública para descargar los archivos
+const generateUrlDownload = async (req, res) => {
+    const { fileId } = req.body;
 
-    //webContentLink -> Nos regresa una URL para poder descargar el archivo
-    const result = await drive.files.get({
-      fileId: fileId,
-      fields: "webContentLink",
-    });
+    // Verificar el fileId
+    if (!fileId) {
+        return res.status(400).json({ message: "El fileId es necesario en el cuerpo de la solicitud." });
+    }
 
-    result.json({ data: result.data });
-  } catch (error) {
-    return { error: error.message };
-  }
+    try {
+        // Obtener la URL de descarga del archivo
+        const result = await drive.files.get({ 
+            fileId: fileId,
+            fields: 'webContentLink'
+        });
+
+        res.json({ webContentLink: result.data.webContentLink });
+    } catch (error) {
+        console.log({ error: error.message });
+        res.status(500).json({ message: "Ha ocurrido un error al generar la URL de descarga." });
+    }
 };
 
 export default generateUrlDownload;

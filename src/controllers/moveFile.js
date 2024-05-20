@@ -14,11 +14,11 @@ const moveFile = async ( req, res ) => {
             fields: 'parents' // Solicitar solo la propiedad parents del archivo
         });
 
-        // Actualizar la propiedad parents para agregar la nueva carpeta y quitar la anterior (si es necesario)
+        // Actualizar la propiedad parents para agregar la nueva carpeta y quitar la anterior
         await drive.files.update({
             fileId: fileId,
             addParents: newParentFolderId, // Agregar la nueva carpeta como padre
-            removeParents: file.data.parents.join(',') // Quitar la carpeta anterior (si es necesario)
+            removeParents: file.data.parents.join(',') // Quitar la carpeta anterior
         });
 
         res.status(201).json({ message: 'Archivo movido correctamente.' });

@@ -1,27 +1,32 @@
 
-import { log } from 'console';
 import drive from '../credentials/authDrive.js';
-import fs from 'fs'
+import fs from 'fs';
 
 // Función para cargar un archivo
-// const uploadFile = async (filePath) => {
-const uploadFile = async ( req, res ) => {
+const uploadFile = async (req, res) => {
+    const { name, filePath } = req.body;
+
+    // Verificar que los datos necesarios están presentes en el cuerpo de la solicitud
+    if (!name || !filePath) {
+        return res.status(400).json({ message: "El nombre y la ruta del archivo son necesarios." });
+    }
+
     try {
         const response = await drive.files.create({
-            requestBody: { // Cuerpo de la solicitud
-                name: 'prueba2', // Nombre con el que se guardará en Drive
+            requestBody: {
+                name: name, // Nombre con el que se guardará en Drive
                 mimeType: 'application/pdf', // Tipo de archivo o recurso (TipoPrincipal/Subtipo)
             },
-            media: { // Información del archivo que vamos a enviar a Drive
+            media: {
                 mimeType: 'application/pdf',
                 body: fs.createReadStream(filePath)
             }
         });
-        res.status(201).json ({ message: "El archivo se ha cargado correctamente" });
 
+        res.status(201).json({ message: "El archivo se ha cargado correctamente", data: response.data });
     } catch (error) {
         console.log({ error: error.message });
-        res.status(500).json({ message: "No se cargado correctamente el archivo." })
+        res.status(500).json({ message: "No se ha cargado correctamente el archivo." });
     }
 };
 

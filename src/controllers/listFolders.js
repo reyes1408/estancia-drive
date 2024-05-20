@@ -11,13 +11,13 @@ const listFolders = async ( req, res ) => {
 
         const folders = response.data.files;
         if (folders.length) {
-            return { folders };
+            res.status(200).json({ folders })
         } else {
-            return { message: 'No se encontraron carpetas.' };
+           res.status(400).json({ message: "No se encontraron carpetas." })
         }
 
     } catch (error) {
-        return { error: error.message };
+        res.status(500).json({error: error.message})
     }
 };
 

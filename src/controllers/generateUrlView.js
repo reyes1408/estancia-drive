@@ -1,10 +1,16 @@
-
 import drive from '../credentials/authDrive.js';
 
-//Generar URL publica para ver y descargar los archivos
-const generateUrlView = async ( req, res ) => {
+// Generar URL pública para ver archivos.
+const generateUrlView = async (req, res) => {
+    const { fileId } = req.body;
+
+    // Verificar el fileId
+    if (!fileId) {
+        return res.status(400).json({ message: "El fileId es necesario en el cuerpo de la solicitud." });
+    }
+
     try {
-        const fileId = '1s6-jeuN57lf7yMk8QBJWA3KAEKJNqRs_';
+        // Crear permiso para ver el archivo
         await drive.permissions.create({
             fileId: fileId,
             requestBody: {
@@ -13,17 +19,17 @@ const generateUrlView = async ( req, res ) => {
             }
         });
 
-        //webViewLink -> Nos regresa una URL para ver el archivo de manera pública
+        // Obtener la URL de vista del archivo
         const result = await drive.files.get({ 
             fileId: fileId,
             fields: 'webViewLink'
         });
 
-        result.json({ data: result.data });
-
+        res.json({ webViewLink: result.data.webViewLink });
     } catch (error) {
-        return { error: error.message };
+        console.log({ error: error.message });
+        res.status(500).json({ message: "Ha ocurrido un error al generar la URL de vista." });
     }
-}
+};
 
 export default generateUrlView;

@@ -8,12 +8,12 @@ const listFiles = async ( req, res ) => {
         });
         const files = response.data.files;
         if (files.length) {
-            return { files };
+            res.status(200).json({ files })
         } else {
-            return { message: 'No se encontraron archivos.' };
+            res.status(400).json({ message: 'No se encontraron archivos.' });
         }
     } catch (error) {
-        return { error: error.message };
+        res.status(500).json({error: error.message})
     }
 };
 
